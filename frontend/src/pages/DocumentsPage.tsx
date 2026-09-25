@@ -8,6 +8,7 @@ import { api } from '../services/api';
 import { DocumentItem, DocumentCategory, DocumentStatus } from '../types';
 import { DocumentCard } from '../components/DocumentCard';
 import { StatusBadge } from '../components/StatusBadge';
+import { AnimatedCounter } from '../components/AnimatedCounter';
 
 interface DocumentsPageProps {
   onSelectDocument: (id: string) => void;
@@ -20,6 +21,7 @@ export const DocumentsPage: React.FC<DocumentsPageProps> = ({
 }) => {
   const { t } = useLanguage();
   const [documents, setDocuments] = useState<DocumentItem[]>([]);
+  const [allDocs, setAllDocs] = useState<DocumentItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [useSemanticSearch, setUseSemanticSearch] = useState(false);
@@ -37,7 +39,8 @@ export const DocumentsPage: React.FC<DocumentsPageProps> = ({
     try {
       if (searchQuery.trim() && useSemanticSearch) {
         const results = await api.search(searchQuery.trim(), true);
-        setDocuments(results.map(r => r.document));
+        const mapped = results.map(r => r.document);
+        setDocuments(mapped);
       } else {
         const res = await api.getDocuments({
           category: selectedCategory !== 'all' ? selectedCategory : undefined,
@@ -46,6 +49,9 @@ export const DocumentsPage: React.FC<DocumentsPageProps> = ({
           sort_by: sortBy,
         });
         setDocuments(res);
+        if (selectedCategory === 'all' && selectedStatus === 'all' && !searchQuery) {
+          setAllDocs(res);
+        }
       }
     } catch (err) {
       console.error(err);
@@ -58,6 +64,22 @@ export const DocumentsPage: React.FC<DocumentsPageProps> = ({
     fetchDocs();
   }, [selectedCategory, selectedStatus, sortBy]);
 
+  useEffect(() => {
+    // Initial load for global category count tallies
+    api.getDocuments().then(res => setAllDocs(res)).catch(() => {});
+  }, []);
+
+  const getCategoryCount = (cat: DocumentCategory) => {
+    if (cat === 'all') return allDocs.length;
+    return allDocs.filter(d => d.category === cat).length;
+  };
+
+  const getStatusCount = (st: string) => {
+    if (st === 'all') return allDocs.length;
+    return allDocs.filter(d => d.status === st).length;
+  };
+
+
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     fetchDocs();
@@ -69,8 +91,11 @@ export const DocumentsPage: React.FC<DocumentsPageProps> = ({
       {/* Top Header & Actions */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-            {t('documents')}
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight flex items-center gap-2">
+            <span>{t('documents')}</span>
+            <span className="text-base sm:text-lg font-normal text-slate-400">
+              (<AnimatedCounter value={allDocs.length || documents.length} />)
+            </span>
           </h1>
           <p className="text-xs text-slate-400 mt-1">
             Organized, structured, and searchable life document repository
@@ -161,40 +186,54 @@ export const DocumentsPage: React.FC<DocumentsPageProps> = ({
           </div>
         </div>
 
-        {/* Category Filter Tabs */}
+        {/* Category Filter Tabs with Dynamic Number Counters */}
         <div className="flex items-center gap-1.5 overflow-x-auto pt-2 pb-1 border-t border-slate-800/60 no-scrollbar">
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setSelectedCategory(cat)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all ${
-                selectedCategory === cat
-                  ? 'bg-brand-500/20 text-brand-400 border border-brand-500/30'
-                  : 'text-slate-400 hover:text-white hover:bg-slate-900'
-              }`}
-            >
-              {t(`cat_${cat}`)}
-            </button>
-          ))}
+          {categories.map((cat) => {
+            const count = getCategoryCount(cat);
+            return (
+              <button
+                key={cat}
+                onClick={() => setSelectedCategory(cat)}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all ${
+                  selectedCategory === cat
+                    ? 'bg-brand-500/20 text-brand-400 border border-brand-500/30'
+                    : 'text-slate-400 hover:text-white hover:bg-slate-900'
+                }`}
+              >
+                <span>{t(`cat_${cat}`)}</span>
+                <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-bold font-mono ${
+                  selectedCategory === cat ? 'bg-brand-500/30 text-white' : 'bg-slate-800 text-slate-400'
+                }`}>
+                  <AnimatedCounter value={count} duration={500} />
+                </span>
+              </button>
+            );
+          })}
         </div>
       </div>
 
-      {/* Status Filter Sub-Bar */}
-      <div className="flex items-center gap-2 text-xs text-slate-400 px-1">
+      {/* Status Filter Sub-Bar with Counters */}
+      <div className="flex items-center gap-2 text-xs text-slate-400 px-1 overflow-x-auto no-scrollbar">
         <span className="font-semibold text-slate-500">Status:</span>
-        {['all', 'safe', 'attention_soon', 'expired', 'needs_review'].map((st) => (
-          <button
-            key={st}
-            onClick={() => setSelectedStatus(st)}
-            className={`px-2.5 py-1 rounded-md transition-colors ${
-              selectedStatus === st
-                ? 'bg-slate-800 text-white font-semibold'
-                : 'text-slate-400 hover:text-slate-200'
-            }`}
-          >
-            {st === 'all' ? 'All' : t(`status_${st}`)}
-          </button>
-        ))}
+        {['all', 'safe', 'attention_soon', 'expired', 'needs_review'].map((st) => {
+          const count = getStatusCount(st);
+          return (
+            <button
+              key={st}
+              onClick={() => setSelectedStatus(st)}
+              className={`flex items-center gap-1 px-2.5 py-1 rounded-md transition-colors ${
+                selectedStatus === st
+                  ? 'bg-slate-800 text-white font-semibold'
+                  : 'text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              <span>{st === 'all' ? 'All' : t(`status_${st}`)}</span>
+              <span className="text-[10px] font-mono opacity-80">
+                (<AnimatedCounter value={count} duration={500} />)
+              </span>
+            </button>
+          );
+        })}
       </div>
 
       {/* Documents Grid / List */}

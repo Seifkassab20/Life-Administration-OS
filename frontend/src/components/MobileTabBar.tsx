@@ -9,6 +9,7 @@ interface MobileTabBarProps {
   onNavigate: (tab: string) => void;
   onOpenScan: () => void;
   urgentCount?: number;
+  documentsCount?: number;
 }
 
 export const MobileTabBar: React.FC<MobileTabBarProps> = ({
@@ -16,12 +17,13 @@ export const MobileTabBar: React.FC<MobileTabBarProps> = ({
   onNavigate,
   onOpenScan,
   urgentCount = 0,
+  documentsCount = 0,
 }) => {
   const { t } = useLanguage();
 
   const tabs = [
     { id: 'dashboard', label: t('dashboard'), icon: LayoutDashboard },
-    { id: 'documents', label: t('documents'), icon: FolderKanban },
+    { id: 'documents', label: t('documents'), icon: FolderKanban, badge: documentsCount },
     { id: 'reminders', label: t('reminders'), icon: Bell, badge: urgentCount },
     { id: 'assistant', label: t('assistant'), icon: Bot },
   ];
@@ -38,11 +40,18 @@ export const MobileTabBar: React.FC<MobileTabBarProps> = ({
             <button
               key={tab.id}
               onClick={() => onNavigate(tab.id)}
-              className={`flex flex-col items-center justify-center flex-1 py-1 px-1 transition-colors ${
+              className={`flex flex-col items-center justify-center flex-1 py-1 px-1 transition-colors relative ${
                 isActive ? 'text-sand font-semibold' : 'text-slate-400 hover:text-slate-200'
               }`}
             >
-              <Icon className={`w-5 h-5 mb-0.5 ${isActive ? 'text-sand scale-105' : 'text-slate-400'}`} />
+              <div className="relative">
+                <Icon className={`w-5 h-5 mb-0.5 ${isActive ? 'text-sand scale-105' : 'text-slate-400'}`} />
+                {tab.badge && tab.badge > 0 ? (
+                  <span className="absolute -top-1 -right-2 px-1 min-w-[15px] h-3.5 bg-brand-500 text-white rounded-full text-[9px] font-bold flex items-center justify-center leading-none">
+                    {tab.badge}
+                  </span>
+                ) : null}
+              </div>
               <span className="text-[10px] tracking-tight">{tab.label}</span>
             </button>
           );

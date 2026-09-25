@@ -5,12 +5,15 @@ import {
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
+import { AnimatedCounter } from './AnimatedCounter';
 
 interface NavbarProps {
   currentTab: string;
   onNavigate: (tab: string) => void;
   onOpenUpload: () => void;
   onOpenAssistant: () => void;
+  documentsCount?: number;
+  remindersCount?: number;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -18,6 +21,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   onNavigate,
   onOpenUpload,
   onOpenAssistant,
+  documentsCount = 7,
+  remindersCount = 2,
 }) => {
   const { language, setLanguage, t, isRtl } = useLanguage();
   const { user, isAuthenticated, logout, loginAsDemo } = useAuth();
@@ -29,8 +34,20 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   const navItems = [
     { id: 'dashboard', label: t('dashboard'), icon: LayoutDashboard },
-    { id: 'documents', label: t('documents'), icon: FolderKanban },
-    { id: 'reminders', label: t('reminders'), icon: Bell },
+    { 
+      id: 'documents', 
+      label: t('documents'), 
+      icon: FolderKanban, 
+      badge: documentsCount,
+      badgeColor: 'bg-brand-500/20 text-brand-300 border-brand-500/30'
+    },
+    { 
+      id: 'reminders', 
+      label: t('reminders'), 
+      icon: Bell, 
+      badge: remindersCount,
+      badgeColor: 'bg-sand/20 text-sand border-sand/30'
+    },
     { id: 'assistant', label: t('assistant'), icon: Bot },
   ];
 
@@ -73,7 +90,14 @@ export const Navbar: React.FC<NavbarProps> = ({
                     }`}
                   >
                     <Icon className={`w-4 h-4 ${active ? 'text-brand-400' : 'text-slate-400'}`} />
-                    {item.label}
+                    <span>{item.label}</span>
+                    {item.badge !== undefined && item.badge > 0 && (
+                      <span className={`px-1.5 py-0.5 rounded-full text-[10px] font-bold font-mono border leading-none ${
+                        item.badgeColor || 'bg-brand-500/20 text-brand-300 border-brand-500/30'
+                      }`}>
+                        <AnimatedCounter value={item.badge} duration={600} />
+                      </span>
+                    )}
                   </button>
                 );
               })}
@@ -177,7 +201,14 @@ export const Navbar: React.FC<NavbarProps> = ({
                 }`}
               >
                 <Icon className="w-4 h-4" />
-                {item.label}
+                <span className="flex-1 text-left rtl:text-right">{item.label}</span>
+                {item.badge !== undefined && item.badge > 0 && (
+                  <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold font-mono border leading-none ${
+                    item.badgeColor || 'bg-brand-500/20 text-brand-300 border-brand-500/30'
+                  }`}>
+                    <AnimatedCounter value={item.badge} duration={600} />
+                  </span>
+                )}
               </button>
             );
           })}

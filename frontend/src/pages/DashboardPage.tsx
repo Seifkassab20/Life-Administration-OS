@@ -10,6 +10,8 @@ import { api } from '../services/api';
 import { DashboardData, DocumentItem } from '../types';
 import { DocumentCard, getCategoryIcon } from '../components/DocumentCard';
 import { StatusBadge } from '../components/StatusBadge';
+import { AnimatedCounter } from '../components/AnimatedCounter';
+import { CounterWidget } from '../components/CounterWidget';
 
 interface DashboardPageProps {
   onOpenUpload: () => void;
@@ -112,7 +114,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
         </div>
       </div>
 
-      {/* Metrics Row */}
+      {/* Metrics Row with Smooth Count-Up Counters */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         
         {/* Total Documents */}
@@ -125,7 +127,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
             <FileText className="w-4 h-4 text-slate-400 group-hover:text-brand-400 transition-colors" />
           </div>
           <p className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
-            {data?.total_documents ?? 7}
+            <AnimatedCounter value={data?.total_documents ?? 7} />
           </p>
           <span className="text-[11px] text-slate-500 mt-1 block">Active stored records</span>
         </div>
@@ -140,7 +142,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
             <Clock className="w-4 h-4 text-sand group-hover:scale-110 transition-transform" />
           </div>
           <p className="text-2xl sm:text-3xl font-bold text-sand tracking-tight">
-            {data?.expiring_soon_count ?? 2}
+            <AnimatedCounter value={data?.expiring_soon_count ?? 2} />
           </p>
           <span className="text-[11px] text-sand/70 mt-1 block">Action needed in &lt; 90 days</span>
         </div>
@@ -155,7 +157,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
             <AlertTriangle className="w-4 h-4 text-terracotta group-hover:text-sand transition-colors" />
           </div>
           <p className="text-2xl sm:text-3xl font-bold text-slate-100 tracking-tight">
-            {data?.needs_attention_count ?? 2}
+            <AnimatedCounter value={data?.needs_attention_count ?? 2} />
           </p>
           <span className="text-[11px] text-slate-500 mt-1 block">Pending review or updates</span>
         </div>
@@ -213,7 +215,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
                       {item.title}
                     </h3>
                     <p className={`text-xs font-bold mt-1 ${isUrgent ? 'text-sand' : 'text-slate-300'}`}>
-                      Expires in {item.days_left} days
+                      Expires in <AnimatedCounter value={item.days_left} duration={700} /> days
                     </p>
                     <p className="text-[11px] text-slate-500 mt-0.5">
                       Deadline: {new Date(item.expiry_date).toLocaleDateString()}
@@ -230,6 +232,9 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
         </div>
       </div>
 
+      {/* Interactive Activity & Document Counter Widget */}
+      <CounterWidget />
+
       {/* Recent Documents Section */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
@@ -243,7 +248,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
             onClick={onNavigateDocuments}
             className="text-xs text-brand-400 hover:text-brand-300 font-semibold flex items-center gap-1"
           >
-            <span>{t('cat_all')} ({data?.total_documents ?? 7})</span>
+            <span>{t('cat_all')} (<AnimatedCounter value={data?.total_documents ?? 7} />)</span>
             <ChevronRight className="w-3.5 h-3.5 rtl:rotate-180" />
           </button>
         </div>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { LanguageProvider, useLanguage } from './context/LanguageContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { Navbar } from './components/Navbar';
@@ -15,12 +15,15 @@ import { DocumentDetailPage } from './pages/DocumentDetailPage';
 import { RemindersPage } from './pages/RemindersPage';
 import { AssistantPage } from './pages/AssistantPage';
 import { DocumentItem } from './types';
+import { api } from './services/api';
 import { Bot, Sparkles } from 'lucide-react';
 
 const AppContent: React.FC = () => {
   const { isAuthenticated } = useAuth();
   const [currentTab, setCurrentTab] = useState<string>('dashboard');
   const [selectedDocId, setSelectedDocId] = useState<string | null>(null);
+  const [docCount, setDocCount] = useState<number>(7);
+  const [reminderCount, setReminderCount] = useState<number>(2);
   
   // Modals state
   const [isUploadOpen, setIsUploadOpen] = useState(false);
@@ -28,6 +31,20 @@ const AppContent: React.FC = () => {
   const [isAssistantDrawerOpen, setIsAssistantDrawerOpen] = useState(false);
   const [assistantTargetDoc, setAssistantTargetDoc] = useState<{ id?: string; title?: string }>({});
   const [assistantInitialQuery, setAssistantInitialQuery] = useState('');
+
+  // Fetch initial counts
+  useEffect(() => {
+    if (isAuthenticated) {
+      api.getDashboard().then((dash) => {
+        if (dash?.total_documents !== undefined) {
+          setDocCount(dash.total_documents);
+        }
+        if (dash?.expiring_soon_count !== undefined) {
+          setReminderCount(dash.expiring_soon_count);
+        }
+      }).catch(() => {});
+    }
+  }, [isAuthenticated]);
 
   // Navigation handlers
   const handleNavigate = (tab: string) => {
@@ -44,6 +61,7 @@ const AppContent: React.FC = () => {
 
   const handleUploadSuccess = (doc: DocumentItem) => {
     setIsUploadOpen(false);
+    setDocCount((prev) => prev + 1);
     // Automatically trigger Human Verification review modal
     setVerifyDoc(doc);
   };
@@ -72,6 +90,8 @@ const AppContent: React.FC = () => {
         onNavigate={handleNavigate}
         onOpenUpload={() => setIsUploadOpen(true)}
         onOpenAssistant={() => handleOpenAssistant()}
+        documentsCount={docCount}
+        remindersCount={reminderCount}
       />
 
       {/* Main Page Layout (with padding for mobile bottom bar) */}
@@ -139,7 +159,8 @@ const AppContent: React.FC = () => {
           currentTab={currentTab}
           onNavigate={handleNavigate}
           onOpenScan={() => setIsUploadOpen(true)}
-          urgentCount={2}
+          urgentCount={reminderCount}
+          documentsCount={docCount}
         />
       )}
 
