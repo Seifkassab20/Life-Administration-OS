@@ -81,7 +81,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
           </p>
 
           {/* Prominent AI Search/Chat Bar */}
-          <form onSubmit={handleAiSubmit} className="relative">
+          <form id="tour-dashboard-ai-bar" onSubmit={handleAiSubmit} className="relative">
             <div className="relative flex items-center">
               <Sparkles className="w-5 h-5 text-brand-400 absolute left-4 pointer-events-none" />
               <input
@@ -120,7 +120,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
       </div>
 
       {/* Metrics Row with Smooth Count-Up Counters */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div id="tour-dashboard-metrics" className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         
         {/* Total Documents */}
         <div 
@@ -184,7 +184,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
       </div>
 
       {/* Expiring Soon Section */}
-      <div className="space-y-4">
+      <div id="tour-expiring-section" className="space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Clock className="w-5 h-5 text-sand" />
@@ -239,10 +239,12 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
       </div>
 
       {/* Interactive Activity & Document Counter Widget */}
-      <CounterWidget />
+      <div id="tour-counter-widget">
+        <CounterWidget />
+      </div>
 
       {/* Recent Documents Section */}
-      <div className="space-y-4">
+      <div id="tour-recent-documents" className="space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <FileText className="w-5 h-5 text-brand-400" />

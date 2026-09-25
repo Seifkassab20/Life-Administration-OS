@@ -60,6 +60,7 @@ export const Navbar: React.FC<NavbarProps> = ({
         <div className="flex items-center justify-between h-16">
           {/* Brand Logo */}
           <div 
+            id="tour-brand"
             onClick={() => onNavigate(isAuthenticated ? 'dashboard' : 'landing')}
             className="flex items-center gap-3 cursor-pointer group"
           >
@@ -85,6 +86,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 return (
                   <div key={item.id} className="flex items-center group">
                     <button
+                      id={`tour-nav-${item.id}`}
                       onClick={() => onNavigate(item.id)}
                       className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-150 ${
                         active
@@ -119,6 +121,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             {/* Interactive Tour & Replay Button */}
             {isAuthenticated && (
               <button
+                id="tour-replay-btn"
                 onClick={() => startTour(0)}
                 title="Interactive App Tour (Click to replay anytime)"
                 className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold text-sand bg-sand/10 hover:bg-sand/20 border border-sand/30 hover:border-sand/50 transition-all shadow-sm active:scale-95 group"
@@ -131,6 +134,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             {/* Quick Tab Purpose Guide Trigger */}
             {isAuthenticated && (
               <button
+                id="tour-tab-guide-btn"
                 onClick={() => openTabGuide(currentTab)}
                 title={t('tab_guide_title')}
                 className="p-1.5 text-slate-400 hover:text-sand hover:bg-sand/10 rounded-lg transition-colors"
@@ -142,6 +146,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
             {/* Language Switcher */}
             <button
+              id="tour-language-btn"
               onClick={toggleLanguage}
               title="Toggle English / العربية"
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-300 hover:text-white bg-slate-900 border border-slate-800 hover:border-slate-700 transition-colors"
@@ -154,6 +159,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               <>
                 {/* Upload Action */}
                 <button
+                  id="tour-upload-btn"
                   onClick={onOpenUpload}
                   className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-white gradient-brand hover:opacity-95 shadow-md shadow-brand-500/25 hover:shadow-brand-500/40 transition-all active:scale-95"
                 >
