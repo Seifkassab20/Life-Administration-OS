@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { 
   FileText, LayoutDashboard, FolderKanban, Bell, Bot, Upload, 
-  Languages, LogOut, User, Menu, X, Shield 
+  Languages, LogOut, User, Menu, X, Shield, Compass, HelpCircle 
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
+import { useOnboarding } from '../context/OnboardingContext';
 import { AnimatedCounter } from './AnimatedCounter';
+import { HelpIcon } from './HelpIcon';
 
 interface NavbarProps {
   currentTab: string;
@@ -26,6 +28,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 }) => {
   const { language, setLanguage, t, isRtl } = useLanguage();
   const { user, isAuthenticated, logout, loginAsDemo } = useAuth();
+  const { startTour, openTabGuide } = useOnboarding();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const toggleLanguage = () => {
@@ -80,32 +83,63 @@ export const Navbar: React.FC<NavbarProps> = ({
                 const Icon = item.icon;
                 const active = currentTab === item.id;
                 return (
-                  <button
-                    key={item.id}
-                    onClick={() => onNavigate(item.id)}
-                    className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-sm font-medium transition-all duration-150 ${
-                      active
-                        ? 'bg-brand-500/15 text-brand-400 border border-brand-500/25 shadow-sm'
-                        : 'text-slate-300 hover:text-white hover:bg-slate-800/50'
-                    }`}
-                  >
-                    <Icon className={`w-4 h-4 ${active ? 'text-brand-400' : 'text-slate-400'}`} />
-                    <span>{item.label}</span>
-                    {item.badge !== undefined && item.badge > 0 && (
-                      <span className={`px-1.5 py-0.5 rounded-full text-[10px] font-bold font-mono border leading-none ${
-                        item.badgeColor || 'bg-brand-500/20 text-brand-300 border-brand-500/30'
-                      }`}>
-                        <AnimatedCounter value={item.badge} duration={600} />
-                      </span>
-                    )}
-                  </button>
+                  <div key={item.id} className="flex items-center group">
+                    <button
+                      onClick={() => onNavigate(item.id)}
+                      className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-150 ${
+                        active
+                          ? 'bg-brand-500/15 text-brand-400 border border-brand-500/25 shadow-sm'
+                          : 'text-slate-300 hover:text-white hover:bg-slate-800/50'
+                      }`}
+                    >
+                      <Icon className={`w-4 h-4 ${active ? 'text-brand-400' : 'text-slate-400'}`} />
+                      <span>{item.label}</span>
+                      {item.badge !== undefined && item.badge > 0 && (
+                        <span className={`px-1.5 py-0.5 rounded-full text-[10px] font-bold font-mono border leading-none ${
+                          item.badgeColor || 'bg-brand-500/20 text-brand-300 border-brand-500/30'
+                        }`}>
+                          <AnimatedCounter value={item.badge} duration={600} />
+                        </span>
+                      )}
+                    </button>
+                    {/* Inline Tab Help Icon */}
+                    <HelpIcon
+                      tabId={item.id}
+                      size="sm"
+                      className="opacity-40 group-hover:opacity-100 transition-opacity -ml-1 mr-1"
+                    />
+                  </div>
                 );
               })}
             </nav>
           )}
 
           {/* Right Actions */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
+            {/* Interactive Tour & Replay Button */}
+            {isAuthenticated && (
+              <button
+                onClick={() => startTour(0)}
+                title="Interactive App Tour (Click to replay anytime)"
+                className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold text-sand bg-sand/10 hover:bg-sand/20 border border-sand/30 hover:border-sand/50 transition-all shadow-sm active:scale-95 group"
+              >
+                <Compass className="w-3.5 h-3.5 group-hover:rotate-45 transition-transform text-sand" />
+                <span className="hidden sm:inline">{t('tour_start')}</span>
+              </button>
+            )}
+
+            {/* Quick Tab Purpose Guide Trigger */}
+            {isAuthenticated && (
+              <button
+                onClick={() => openTabGuide(currentTab)}
+                title={t('tab_guide_title')}
+                className="p-1.5 text-slate-400 hover:text-sand hover:bg-sand/10 rounded-lg transition-colors"
+                aria-label="Tab Guide"
+              >
+                <HelpCircle className="w-4 h-4" />
+              </button>
+            )}
+
             {/* Language Switcher */}
             <button
               onClick={toggleLanguage}
@@ -212,7 +246,27 @@ export const Navbar: React.FC<NavbarProps> = ({
               </button>
             );
           })}
-          <div className="pt-2">
+          <div className="pt-2 space-y-1.5 border-t border-slate-800/80 mt-2">
+            <button
+              onClick={() => {
+                startTour(0);
+                setMobileMenuOpen(false);
+              }}
+              className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold text-sand bg-sand/10 border border-sand/30"
+            >
+              <Compass className="w-4 h-4 text-sand" />
+              <span>{t('tour_start')} (Replay Tour)</span>
+            </button>
+            <button
+              onClick={() => {
+                openTabGuide(currentTab);
+                setMobileMenuOpen(false);
+              }}
+              className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-xs font-medium text-slate-300 bg-slate-800/60"
+            >
+              <HelpCircle className="w-4 h-4" />
+              <span>{t('tab_guide_title')}</span>
+            </button>
             <button
               onClick={() => {
                 onOpenUpload();

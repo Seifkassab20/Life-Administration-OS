@@ -6,6 +6,7 @@ import {
 import { useLanguage } from '../context/LanguageContext';
 import { api } from '../services/api';
 import { ReminderItem } from '../types';
+import { HelpIcon } from '../components/HelpIcon';
 
 interface RemindersPageProps {
   onSelectDocument: (docId: string) => void;
@@ -75,9 +76,13 @@ export const RemindersPage: React.FC<RemindersPageProps> = ({ onSelectDocument }
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-            {t('reminders')} & Deadlines
-          </h1>
+          <div className="flex flex-wrap items-center gap-2">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight flex items-center gap-2">
+              <span>{t('reminders')} & Deadlines</span>
+            </h1>
+            <HelpIcon tabId="reminders" size="md" />
+            <HelpIcon tabId="reminders" variant="pill" label="About Reminders" />
+          </div>
           <p className="text-xs text-slate-400 mt-1">
             Automated alerts scheduled 30 days, 7 days, and 1 day before expiration
           </p>

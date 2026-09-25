@@ -9,6 +9,7 @@ import { DocumentItem, DocumentCategory, DocumentStatus } from '../types';
 import { DocumentCard } from '../components/DocumentCard';
 import { StatusBadge } from '../components/StatusBadge';
 import { AnimatedCounter } from '../components/AnimatedCounter';
+import { HelpIcon } from '../components/HelpIcon';
 
 interface DocumentsPageProps {
   onSelectDocument: (id: string) => void;
@@ -91,12 +92,16 @@ export const DocumentsPage: React.FC<DocumentsPageProps> = ({
       {/* Top Header & Actions */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight flex items-center gap-2">
-            <span>{t('documents')}</span>
-            <span className="text-base sm:text-lg font-normal text-slate-400">
-              (<AnimatedCounter value={allDocs.length || documents.length} />)
-            </span>
-          </h1>
+          <div className="flex flex-wrap items-center gap-2">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight flex items-center gap-2">
+              <span>{t('documents')}</span>
+              <span className="text-base sm:text-lg font-normal text-slate-400">
+                (<AnimatedCounter value={allDocs.length || documents.length} />)
+              </span>
+            </h1>
+            <HelpIcon tabId="documents" size="md" />
+            <HelpIcon tabId="documents" variant="pill" label="About Documents" />
+          </div>
           <p className="text-xs text-slate-400 mt-1">
             Organized, structured, and searchable life document repository
           </p>

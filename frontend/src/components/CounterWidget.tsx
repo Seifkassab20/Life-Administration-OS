@@ -4,6 +4,7 @@ import {
   ChevronUp, ChevronDown, Hash, Award, Flame 
 } from 'lucide-react';
 import { AnimatedCounter } from './AnimatedCounter';
+import { HelpIcon } from './HelpIcon';
 
 interface CounterWidgetProps {
   initialCount?: number;
@@ -101,6 +102,7 @@ export const CounterWidget: React.FC<CounterWidgetProps> = ({
         </div>
 
         <div className="flex items-center gap-1.5">
+          <HelpIcon tabId="counter" size="sm" />
           <button
             onClick={() => setIsCollapsed(!isCollapsed)}
             className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"

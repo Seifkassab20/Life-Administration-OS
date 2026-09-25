@@ -1,8 +1,9 @@
 import React from 'react';
 import { 
-  LayoutDashboard, FolderKanban, Bell, Bot, Camera, Plus 
+  LayoutDashboard, FolderKanban, Bell, Bot, Camera, Plus, HelpCircle 
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import { useOnboarding } from '../context/OnboardingContext';
 
 interface MobileTabBarProps {
   currentTab: string;
@@ -19,7 +20,8 @@ export const MobileTabBar: React.FC<MobileTabBarProps> = ({
   urgentCount = 0,
   documentsCount = 0,
 }) => {
-  const { t } = useLanguage();
+  const { t, isRtl } = useLanguage();
+  const { openTabGuide } = useOnboarding();
 
   const tabs = [
     { id: 'dashboard', label: t('dashboard'), icon: LayoutDashboard },
@@ -30,6 +32,16 @@ export const MobileTabBar: React.FC<MobileTabBarProps> = ({
 
   return (
     <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#07151D]/90 backdrop-blur-xl border-t border-slate-800/80 px-2 py-1.5 pb-[max(0.375rem,env(safe-area-inset-bottom))]">
+      {/* Quick Tab Purpose Guide Pill floating above bottom bar */}
+      <button
+        onClick={() => openTabGuide(currentTab)}
+        className={`absolute -top-7 ${isRtl ? 'left-4' : 'right-4'} px-2.5 py-0.5 rounded-full bg-slate-900/95 border border-sand/30 text-sand text-[10px] font-bold flex items-center gap-1 shadow-lg backdrop-blur-md active:scale-95`}
+        title={t('tab_help_btn')}
+      >
+        <HelpCircle className="w-3 h-3 text-sand" />
+        <span>{t('tab_help_btn')}</span>
+      </button>
+
       <div className="flex items-center justify-around relative">
         
         {/* First 2 tabs */}

@@ -101,6 +101,72 @@ export const translations: Translations = {
   },
   sourceLabel: { en: 'Source', ar: 'المصدر' },
   askDocAction: { en: 'Ask about this document', ar: 'اسأل عن هذا المستند' },
+
+  // Onboarding Tour
+  tour_welcome_title: { en: 'Welcome to Life Administration OS', ar: 'مرحباً بك في نظام إدارة الحياة الذكي' },
+  tour_welcome_desc: {
+    en: 'Your intelligent, private vault for personal paperwork. Take this 1-minute interactive tour to discover how each section empowers you to stay organized and never miss a deadline.',
+    ar: 'خزينتك الرقمية الآمنة لجميع أوراقك الرسمية والشخصية. انضم لهذه الجولة السريعة لتتعرف على وظيفة كل قسم وكيف يحميك من فوات المواعيد.'
+  },
+  tour_dashboard_title: { en: 'Dashboard: Vital Health & Deadlines', ar: 'لوحة التحكم: الحالة العامة والمواعيد العاجلة' },
+  tour_dashboard_desc: {
+    en: 'Get an instant overview of your document health, animated count-up metrics, upcoming renewal countdowns, and your daily life admin activity counter.',
+    ar: 'احصل على نظرة فورية لحالة مستنداتك، وإحصائيات العدادات التفاعلية، ومواعيد التجديد القادمة، ومتتبع إنجاز المهام اليومية.'
+  },
+  tour_documents_title: { en: 'Documents: Intelligent Digital Vault', ar: 'المستندات: الخزينة الرقمية المصنفة' },
+  tour_documents_desc: {
+    en: 'All your IDs, licenses, contracts, and bills neatly classified with dynamic count badges. Search deep inside scanned text, filter by status, and view verified fields.',
+    ar: 'جميع بطاقاتك ورخصك وعقودك وفواتيرك مصنفة بدقة مع عدادات حية. ابحث داخل نصوص المسح الضوئي، وفلتر بحالة الصلاحية، واستعرض البيانات المؤكدة.'
+  },
+  tour_reminders_title: { en: 'Reminders: Proactive Deadlines', ar: 'التنبيهات: حماية استباقية ومواعيد التجديد' },
+  tour_reminders_desc: {
+    en: 'Never get hit with expired license fines or late fees. Automated alerts sort paperwork by urgency (Overdue, <7 days, <30 days, Safe) with renewal steps.',
+    ar: 'تجنب غرامات انتهاء التراخيص أو التأخير. تنبيهات تلقائية تصنف وثائقك حسب درجة الاستعجال مع خطوات وإرشادات التجديد.'
+  },
+  tour_assistant_title: { en: 'AI Assistant: Talk Directly to Your Documents', ar: 'المساعد الذكي: تحدث مع وثائقك مباشرة' },
+  tour_assistant_desc: {
+    en: 'Ask any question in English or Arabic. The assistant reads your documents and provides grounded answers with exact source citations and zero hallucinations.',
+    ar: 'اطرح أي سؤال بالعربية أو الإنجليزية. يقرأ المساعد مستنداتك ويقدم إجابات دقيقة وموثقة بالمصدر الأصلي دون أي افتراضات غير حقيقية.'
+  },
+  tour_upload_title: { en: 'Scan & Upload: Multi-Stage OCR Pipeline', ar: 'المسح والرفع: استخراج ذكي وفحص بشري' },
+  tour_upload_desc: {
+    en: 'Snap a photo with your mobile camera or drop a PDF. Multi-modal AI reads bilingual text, extracts dates, and lets you verify everything before saving.',
+    ar: 'التقط صورة بكاميرا هاتفك أو ارفع ملف PDF. يتعرف الذكاء الاصطناعي على النصوص العربية والإنجليزية ويستخرج التواريخ مع مراجعة بشرية لتأكيد الدقة.'
+  },
+  tour_tracker_title: { en: 'Activity Tracker: Daily Goal Counter', ar: 'متتبع الإنجاز: عداد المهام اليومية' },
+  tour_tracker_desc: {
+    en: 'Stay on top of life administration with the interactive counter widget. Log reviewed papers, track daily goals, and maintain your streak.',
+    ar: 'حافظ على إنتاجيتك مع العداد التفاعلي. سجّل الأوراق التي راجعتها، وتابع تحقيق هدفك اليومي بسهولة.'
+  },
+  tour_help_title: { en: 'Help Icons & Replay Anytime', ar: 'أيقونات المساعدة وإعادة الجولة في أي وقت' },
+  tour_help_desc: {
+    en: 'Every tab has a help icon (?) explaining its exact purpose and when to tap it. You can replay this interactive tour anytime from the top navigation bar!',
+    ar: 'يحتوي كل قسم على أيقونة مساعدة (?) تشرح الغرض منه ومتى تضغط عليه. يمكنك إعادة هذه الجولة التعريفية في أي وقت من الشريط العلوي!'
+  },
+
+  // Tour Controls
+  tour_next: { en: 'Next Step', ar: 'الخطوة التالية' },
+  tour_back: { en: 'Back', ar: 'السابق' },
+  tour_skip: { en: 'Skip Tour', ar: 'تخطي الجولة' },
+  tour_finish: { en: 'Got it, let’s go!', ar: 'فهمت، لنبدأ الآن!' },
+  tour_replay: { en: 'Replay Tour', ar: 'إعادة الجولة' },
+  tour_start: { en: 'App Tour', ar: 'جولة التطبيق' },
+  tour_step_indicator: { en: 'Step {current} of {total}', ar: 'الخطوة {current} من {total}' },
+  tour_try_tab: { en: 'Explore this tab', ar: 'استكشف هذا القسم' },
+
+  // Tab Help & Purpose Guide
+  tab_guide_title: { en: 'Tab & Feature Guide', ar: 'دليل الأقسام ومقاصد الاستخدام' },
+  tab_guide_subtitle: {
+    en: 'Click any section to understand its exact purpose, when to tap it, and what actions you can take.',
+    ar: 'انقر على أي قسم لفهم معناه، والغرض من استخدامه، والعمليات التي يمكنك إنجازها فيه.'
+  },
+  purpose_label: { en: 'Meaning & Purpose', ar: 'المعنى والغرض الأساسي' },
+  when_to_tap: { en: 'When to Tap This', ar: 'متى تضغط على هذا القسم؟' },
+  key_actions: { en: 'Key Actions', ar: 'أهم العمليات المتاحة' },
+  ai_powers: { en: 'AI Superpower', ar: 'الميزة الذكية الفائقة' },
+  open_tab_now: { en: 'Open Tab', ar: 'فتح القسم الآن' },
+  close_guide: { en: 'Close Guide', ar: 'إغلاق الدليل' },
+  tab_help_tooltip: { en: 'Understand the purpose of this tab', ar: 'تعرف على الغرض من هذا القسم' },
 };
 
 interface LanguageContextType {

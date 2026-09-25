@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { LanguageProvider, useLanguage } from './context/LanguageContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { OnboardingProvider, useOnboarding } from './context/OnboardingContext';
 import { Navbar } from './components/Navbar';
 import { MobileTabBar } from './components/MobileTabBar';
 import { UploadModal } from './components/UploadModal';
 import { HumanVerificationModal } from './components/HumanVerificationModal';
 import { AssistantDrawer } from './components/AssistantDrawer';
+import { OnboardingTour } from './components/OnboardingTour';
+import { TabGuideModal } from './components/TabGuideModal';
 import { LandingPage } from './pages/LandingPage';
 import { LoginPage } from './pages/LoginPage';
 import { SignUpPage } from './pages/SignUpPage';
@@ -16,10 +19,11 @@ import { RemindersPage } from './pages/RemindersPage';
 import { AssistantPage } from './pages/AssistantPage';
 import { DocumentItem } from './types';
 import { api } from './services/api';
-import { Bot, Sparkles } from 'lucide-react';
+import { Bot, Sparkles, Compass, HelpCircle } from 'lucide-react';
 
 const AppContent: React.FC = () => {
   const { isAuthenticated } = useAuth();
+  const { startTour, openTabGuide } = useOnboarding();
   const [currentTab, setCurrentTab] = useState<string>('dashboard');
   const [selectedDocId, setSelectedDocId] = useState<string | null>(null);
   const [docCount, setDocCount] = useState<number>(7);
@@ -153,6 +157,18 @@ const AppContent: React.FC = () => {
         </button>
       )}
 
+      {/* Floating Tour & Guide Trigger Pill (Replay anytime) */}
+      {isAuthenticated && (
+        <button
+          onClick={() => startTour(0)}
+          title="Interactive App Tour (Replay anytime)"
+          className="fixed bottom-6 left-6 z-30 hidden sm:flex items-center gap-2 px-3.5 py-2.5 rounded-full bg-slate-900/90 hover:bg-slate-800 text-sand border border-sand/30 hover:border-sand/60 shadow-xl backdrop-blur-md text-xs font-bold transition-all active:scale-95 group"
+        >
+          <Compass className="w-4 h-4 text-sand group-hover:rotate-45 transition-transform" />
+          <span>App Tour</span>
+        </button>
+      )}
+
       {/* Dedicated Mobile Bottom Tab Bar */}
       {isAuthenticated && (
         <MobileTabBar
@@ -163,6 +179,17 @@ const AppContent: React.FC = () => {
           documentsCount={docCount}
         />
       )}
+
+      {/* Global Interactive Onboarding Tour & Tab Guide */}
+      <OnboardingTour
+        onNavigateTab={handleNavigate}
+        onOpenUpload={() => setIsUploadOpen(true)}
+      />
+
+      <TabGuideModal
+        onNavigateTab={handleNavigate}
+        onOpenUpload={() => setIsUploadOpen(true)}
+      />
 
       {/* Global Modals & Drawers */}
       <UploadModal
@@ -195,7 +222,9 @@ export function App() {
   return (
     <LanguageProvider>
       <AuthProvider>
-        <AppContent />
+        <OnboardingProvider>
+          <AppContent />
+        </OnboardingProvider>
       </AuthProvider>
     </LanguageProvider>
   );

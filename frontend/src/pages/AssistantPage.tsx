@@ -6,6 +6,7 @@ import {
 import { useLanguage } from '../context/LanguageContext';
 import { api } from '../services/api';
 import { ChatMessage, DocumentItem, AssistantSource } from '../types';
+import { HelpIcon } from '../components/HelpIcon';
 
 interface AssistantPageProps {
   onSelectDocument: (id: string) => void;
@@ -115,9 +116,13 @@ export const AssistantPage: React.FC<AssistantPageProps> = ({
             <ShieldCheck className="w-3.5 h-3.5" />
             <span>Anti-Hallucination Grounded Intelligence</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-            {t('assistantTitle')}
-          </h1>
+          <div className="flex flex-wrap items-center gap-2">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight flex items-center gap-2">
+              <span>{t('assistantTitle')}</span>
+            </h1>
+            <HelpIcon tabId="assistant" size="md" />
+            <HelpIcon tabId="assistant" variant="pill" label="About AI Assistant" />
+          </div>
           <p className="text-xs text-slate-400 mt-1">
             {t('assistantPrompt')}
           </p>

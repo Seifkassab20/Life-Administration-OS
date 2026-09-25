@@ -12,6 +12,7 @@ import { DocumentCard, getCategoryIcon } from '../components/DocumentCard';
 import { StatusBadge } from '../components/StatusBadge';
 import { AnimatedCounter } from '../components/AnimatedCounter';
 import { CounterWidget } from '../components/CounterWidget';
+import { HelpIcon } from '../components/HelpIcon';
 
 interface DashboardPageProps {
   onOpenUpload: () => void;
@@ -67,9 +68,13 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
       {/* Top Welcome & AI Assistant Prompt Header */}
       <div className="glass-panel p-6 sm:p-8 rounded-3xl border border-white/5 relative overflow-hidden bg-gradient-to-br from-slate-900/90 to-slate-950/90 shadow-xl">
         <div className="max-w-3xl">
-          <span className="text-xs uppercase font-bold tracking-wider text-brand-400">Personal Document Intelligence</span>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-white mt-1 mb-2">
-            {data?.greeting || `Good evening, ${user?.full_name?.split(' ')[0] || 'Seif'} 👋`}
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <span className="text-xs uppercase font-bold tracking-wider text-brand-400">Personal Document Intelligence</span>
+            <HelpIcon tabId="dashboard" variant="pill" label="About Dashboard" />
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-white mt-1 mb-2 flex items-center gap-2">
+            <span>{data?.greeting || `Good evening, ${user?.full_name?.split(' ')[0] || 'Seif'} 👋`}</span>
+            <HelpIcon tabId="dashboard" size="sm" />
           </h1>
           <p className="text-sm text-slate-300 mb-6">
             Your life documents are organized, secure, and ready to answer your questions.
@@ -186,6 +191,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
             <h2 className="text-lg font-bold text-white tracking-tight">
               {t('expiringSoon')} & Upcoming Deadlines
             </h2>
+            <HelpIcon tabId="reminders" size="sm" />
           </div>
           <button
             onClick={onNavigateReminders}
@@ -243,6 +249,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
             <h2 className="text-lg font-bold text-white tracking-tight">
               {t('recentlyAdded')}
             </h2>
+            <HelpIcon tabId="documents" size="sm" />
           </div>
           <button
             onClick={onNavigateDocuments}
