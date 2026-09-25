@@ -40,24 +40,45 @@ class GeminiLLMProvider(LLMProvider):
         chat_history: Optional[List[Dict[str, str]]] = None
     ) -> Dict[str, Any]:
         try:
-            import google.generativeai as genai
-            genai.configure(api_key=self.api_key)
-            model = genai.GenerativeModel("gemini-1.5-flash")
-
+            import httpx
             context_text = "\n\n".join([
-                f"[Document: {c['document_title']} (Page {c['page_number']})]\n{c['content']}"
+                f"[Document: {c.get('document_title', 'Untitled')} (Page {c.get('page_number', 1)})]\n{c.get('content', '')}"
                 for c in context_chunks
             ])
 
             prompt = f"{SYSTEM_GROUNDED_PROMPT}\n\nDocument Context:\n{context_text}\n\nUser Question: {query}"
-            response = await model.generate_content_async(prompt)
-            return {
-                "answer": response.text.strip(),
-                "grounded": "couldn't find" not in response.text.lower()
-            }
+            models_to_try = ["gemini-3.8-flash", "gemini-flash-latest"]
+
+            async with httpx.AsyncClient(timeout=25.0) as client:
+                for model in models_to_try:
+                    url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
+                    try:
+                        res = await client.post(
+                            url,
+                            headers={"x-goog-api-key": self.api_key, "Content-Type": "application/json"},
+                            json={"contents": [{"parts": [{"text": prompt}]}]}
+                        )
+                        if res.status_code == 200:
+                            data = res.json()
+                            candidates = data.get("candidates", [])
+                            if candidates:
+                                parts = candidates[0].get("content", {}).get("parts", [])
+                                # Filter out internal thought parts if present
+                                text_parts = [p.get("text", "") for p in parts if not p.get("thought", False) and "text" in p]
+                                answer = "".join(text_parts).strip() if text_parts else candidates[0].get("content", {}).get("parts", [{}])[0].get("text", "").strip()
+                                return {
+                                    "answer": answer,
+                                    "grounded": "couldn't find" not in answer.lower()
+                                }
+                    except Exception as req_err:
+                        logger.warning(f"Error querying Gemini model {model}: {req_err}")
+                        continue
+
+            return RuleBasedLLMProvider().generate_grounded_answer_sync(query, context_chunks)
         except Exception as e:
             logger.error(f"Gemini API error: {e}")
             return RuleBasedLLMProvider().generate_grounded_answer_sync(query, context_chunks)
+
 
 class OpenAILLMProvider(LLMProvider):
     def __init__(self, api_key: str):

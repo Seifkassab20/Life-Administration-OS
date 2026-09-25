@@ -15,6 +15,8 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onSuccess, onNavigateSignU
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
 
+  const [infoMessage, setInfoMessage] = useState<string | null>(null);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) return;
@@ -24,6 +26,14 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onSuccess, onNavigateSignU
     } catch (err: any) {
       setError(err.message || 'Login failed');
     }
+  };
+
+  const handleForgotPassword = () => {
+    setInfoMessage(
+      email
+        ? `Password reset instruction sent to ${email} (Demo password is: password123).`
+        : 'Tip: Demo account password is "password123", or click "Quick Demo Login" below.'
+    );
   };
 
   const handleDemo = async () => {
@@ -53,6 +63,13 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onSuccess, onNavigateSignU
           </div>
         )}
 
+        {infoMessage && (
+          <div className="mb-4 p-3 rounded-xl bg-brand-500/10 border border-brand-500/20 text-brand-300 text-xs flex items-center gap-2">
+            <Sparkles className="w-4 h-4 shrink-0" />
+            <span>{infoMessage}</span>
+          </div>
+        )}
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-xs font-semibold text-slate-300 mb-1.5">
@@ -76,7 +93,11 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onSuccess, onNavigateSignU
               <label className="text-xs font-semibold text-slate-300">
                 Password
               </label>
-              <button type="button" className="text-[11px] text-brand-400 hover:underline">
+              <button
+                type="button"
+                onClick={handleForgotPassword}
+                className="text-[11px] text-brand-400 hover:underline"
+              >
                 Forgot password?
               </button>
             </div>

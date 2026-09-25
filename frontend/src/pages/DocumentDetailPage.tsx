@@ -53,6 +53,26 @@ export const DocumentDetailPage: React.FC<DocumentDetailPageProps> = ({
     }
   };
 
+  const [copiedLink, setCopiedLink] = useState(false);
+  const [showEmbeddedPreview, setShowEmbeddedPreview] = useState(true);
+
+  const handleDownload = () => {
+    if (!doc) return;
+    const downloadUrl = api.getDownloadUrl(doc.id);
+    const link = document.createElement('a');
+    link.href = downloadUrl;
+    link.download = `${doc.title}.pdf`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const handleShare = () => {
+    navigator.clipboard.writeText(window.location.href);
+    setCopiedLink(true);
+    setTimeout(() => setCopiedLink(false), 2000);
+  };
+
   if (loading) {
     return (
       <div className="text-center py-20 text-slate-400 text-xs">
@@ -72,6 +92,10 @@ export const DocumentDetailPage: React.FC<DocumentDetailPageProps> = ({
     );
   }
 
+  const effectiveFileUrl = doc.preview_url?.startsWith('http')
+    ? doc.preview_url
+    : api.getFileUrl(doc.id);
+
   return (
     <div className="space-y-6 pb-20">
       
@@ -86,13 +110,31 @@ export const DocumentDetailPage: React.FC<DocumentDetailPageProps> = ({
         </button>
 
         {/* Action Buttons */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <button
             onClick={() => onAskAboutDoc(doc.id, doc.title)}
             className="px-3.5 py-2 rounded-xl text-xs font-semibold gradient-brand text-white shadow-md shadow-brand-500/20 hover:opacity-95 flex items-center gap-1.5 transition-all"
           >
             <Bot className="w-3.5 h-3.5" />
             <span>{t('askDocAction')}</span>
+          </button>
+
+          <button
+            onClick={handleDownload}
+            className="px-3 py-2 rounded-xl text-xs font-semibold bg-slate-900 border border-slate-700 hover:bg-slate-800 text-slate-300 hover:text-white flex items-center gap-1.5 transition-colors"
+            title="Download Document"
+          >
+            <Download className="w-3.5 h-3.5 text-brand-400" />
+            <span>Download</span>
+          </button>
+
+          <button
+            onClick={handleShare}
+            className="px-3 py-2 rounded-xl text-xs font-semibold bg-slate-900 border border-slate-700 hover:bg-slate-800 text-slate-300 hover:text-white flex items-center gap-1.5 transition-colors"
+            title="Share Document Link"
+          >
+            <Share2 className="w-3.5 h-3.5 text-slate-400" />
+            <span>{copiedLink ? 'Copied!' : 'Share'}</span>
           </button>
 
           <button
@@ -152,32 +194,66 @@ export const DocumentDetailPage: React.FC<DocumentDetailPageProps> = ({
                 <Eye className="w-3.5 h-3.5 text-brand-400" />
                 <span>Document Preview</span>
               </h3>
-              <span className="text-[11px] text-slate-500">{doc.mime_type}</span>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setShowEmbeddedPreview(!showEmbeddedPreview)}
+                  className="text-[11px] text-brand-400 hover:underline"
+                >
+                  {showEmbeddedPreview ? 'Card View' : 'Inline View'}
+                </button>
+                <span className="text-[11px] text-slate-500">• {doc.mime_type}</span>
+              </div>
             </div>
 
             {/* Document preview container */}
-            <div className="w-full aspect-[3/4] bg-slate-950 rounded-2xl border border-slate-800/80 overflow-hidden flex flex-col items-center justify-center relative p-6 text-center">
-              <div className="w-16 h-16 rounded-2xl bg-brand-500/10 border border-brand-500/20 text-brand-400 flex items-center justify-center mb-3">
-                <FileText className="w-8 h-8" />
-              </div>
-              <h4 className="text-sm font-semibold text-white max-w-[80%] truncate">
-                {doc.title}
-              </h4>
-              <p className="text-xs text-slate-400 mt-1 max-w-[70%]">
-                Digital preview rendered from secure storage
-              </p>
-
-              {doc.preview_url && (
-                <a
-                  href={doc.preview_url}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="mt-6 px-4 py-2 rounded-xl text-xs font-semibold bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-200 hover:text-white flex items-center gap-1.5 transition-colors"
-                >
-                  <ExternalLink className="w-3.5 h-3.5" />
-                  <span>Open Full Document</span>
-                </a>
+            <div className="w-full aspect-[3/4] bg-slate-950 rounded-2xl border border-slate-800/80 overflow-hidden flex flex-col items-center justify-center relative">
+              {showEmbeddedPreview ? (
+                doc.mime_type.startsWith('image/') ? (
+                  <img
+                    src={effectiveFileUrl}
+                    alt={doc.title}
+                    className="w-full h-full object-contain"
+                  />
+                ) : (
+                  <iframe
+                    src={effectiveFileUrl}
+                    title={doc.title}
+                    className="w-full h-full border-0 rounded-2xl"
+                  />
+                )
+              ) : (
+                <div className="p-6 text-center flex flex-col items-center">
+                  <div className="w-16 h-16 rounded-2xl bg-brand-500/10 border border-brand-500/20 text-brand-400 flex items-center justify-center mb-3">
+                    <FileText className="w-8 h-8" />
+                  </div>
+                  <h4 className="text-sm font-semibold text-white max-w-[80%] truncate">
+                    {doc.title}
+                  </h4>
+                  <p className="text-xs text-slate-400 mt-1 max-w-[70%]">
+                    Digital document stored securely
+                  </p>
+                </div>
               )}
+            </div>
+
+            <div className="pt-3 flex items-center justify-between gap-2">
+              <a
+                href={effectiveFileUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="flex-1 py-2 rounded-xl text-xs font-semibold bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-200 hover:text-white flex items-center justify-center gap-1.5 transition-colors"
+              >
+                <ExternalLink className="w-3.5 h-3.5" />
+                <span>Open in Tab</span>
+              </a>
+
+              <button
+                onClick={handleDownload}
+                className="flex-1 py-2 rounded-xl text-xs font-semibold gradient-brand text-white flex items-center justify-center gap-1.5 shadow-md shadow-brand-500/20"
+              >
+                <Download className="w-3.5 h-3.5" />
+                <span>Download</span>
+              </button>
             </div>
           </div>
         </div>

@@ -55,6 +55,7 @@ export const HumanVerificationModal: React.FC<HumanVerificationModalProps> = ({
         document_type: docType,
         issue_date: issueDate || null,
         expiry_date: expiryDate || null,
+        due_date: dueDate || null,
         fields: fields.map(f => ({ field_name: f.field_name, field_value: f.field_value })),
       });
       onConfirmed(updatedDoc);
@@ -72,15 +73,25 @@ export const HumanVerificationModal: React.FC<HumanVerificationModalProps> = ({
         
         {/* Header */}
         <div className="flex items-start justify-between mb-6 pb-4 border-b border-slate-800">
-          <div>
+          <div className="flex-1 pr-4">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-500/10 border border-brand-500/20 text-brand-400 text-xs font-semibold mb-2">
               <ShieldCheck className="w-3.5 h-3.5" />
               <span>{t('reviewHeading')}</span>
             </div>
-            <h2 className="text-xl font-bold text-white">
-              {document.title}
-            </h2>
-            <p className="text-xs text-slate-400 mt-0.5">
+            {isEditing ? (
+              <input
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                className="w-full px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-700 text-lg font-bold text-white focus:outline-none focus:border-brand-500"
+                placeholder="Document Title"
+              />
+            ) : (
+              <h2 className="text-xl font-bold text-white">
+                {title || document.title}
+              </h2>
+            )}
+            <p className="text-xs text-slate-400 mt-1">
               {t('reviewSubheading')}
             </p>
           </div>
@@ -134,8 +145,8 @@ export const HumanVerificationModal: React.FC<HumanVerificationModalProps> = ({
             </select>
           </div>
 
-          {/* Dates Section */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {/* Dates Section (Issue Date, Expiry Date, Due Date) */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div className="bg-slate-900/60 p-3.5 rounded-2xl border border-slate-800">
               <label className="block text-xs font-semibold text-slate-400 mb-1.5 flex items-center gap-1.5">
                 <Calendar className="w-3.5 h-3.5 text-brand-400" />
@@ -146,21 +157,35 @@ export const HumanVerificationModal: React.FC<HumanVerificationModalProps> = ({
                 value={issueDate}
                 onChange={(e) => setIssueDate(e.target.value)}
                 disabled={!isEditing}
-                className="w-full px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-700 text-sm text-slate-200 disabled:opacity-80 focus:outline-none focus:border-brand-500"
+                className="w-full px-2.5 py-1.5 rounded-lg bg-slate-950 border border-slate-700 text-xs text-slate-200 disabled:opacity-80 focus:outline-none focus:border-brand-500"
               />
             </div>
 
             <div className="bg-slate-900/60 p-3.5 rounded-2xl border border-slate-800">
               <label className="block text-xs font-semibold text-slate-400 mb-1.5 flex items-center gap-1.5">
                 <Calendar className="w-3.5 h-3.5 text-amber-400" />
-                Expiry Date / End Date
+                Expiry Date
               </label>
               <input
                 type="date"
                 value={expiryDate}
                 onChange={(e) => setExpiryDate(e.target.value)}
                 disabled={!isEditing}
-                className="w-full px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-700 text-sm text-slate-200 disabled:opacity-80 focus:outline-none focus:border-brand-500"
+                className="w-full px-2.5 py-1.5 rounded-lg bg-slate-950 border border-slate-700 text-xs text-slate-200 disabled:opacity-80 focus:outline-none focus:border-brand-500"
+              />
+            </div>
+
+            <div className="bg-slate-900/60 p-3.5 rounded-2xl border border-slate-800">
+              <label className="block text-xs font-semibold text-slate-400 mb-1.5 flex items-center gap-1.5">
+                <Calendar className="w-3.5 h-3.5 text-rose-400" />
+                Due Date (Bills)
+              </label>
+              <input
+                type="date"
+                value={dueDate}
+                onChange={(e) => setDueDate(e.target.value)}
+                disabled={!isEditing}
+                className="w-full px-2.5 py-1.5 rounded-lg bg-slate-950 border border-slate-700 text-xs text-slate-200 disabled:opacity-80 focus:outline-none focus:border-brand-500"
               />
             </div>
           </div>

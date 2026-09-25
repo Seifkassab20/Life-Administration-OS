@@ -168,6 +168,7 @@ class ApiService {
     fields?: Array<{ field_name: string; field_value: string }>;
     expiry_date?: string | null;
     issue_date?: string | null;
+    due_date?: string | null;
   }): Promise<DocumentItem> {
     const res = await fetch(`${API_BASE_URL}/documents/${id}/confirm`, {
       method: 'POST',
@@ -176,6 +177,14 @@ class ApiService {
     });
     if (!res.ok) throw new Error('Confirmation failed');
     return await res.json();
+  }
+
+  getFileUrl(documentId: string): string {
+    return `${API_BASE_URL}/documents/${documentId}/file`;
+  }
+
+  getDownloadUrl(documentId: string): string {
+    return `${API_BASE_URL}/documents/${documentId}/download`;
   }
 
   async deleteDocument(id: string): Promise<void> {

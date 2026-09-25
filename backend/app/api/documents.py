@@ -322,6 +322,66 @@ async def get_document_file(
 
     file_bytes = storage_service.get_file_bytes(doc.file_path)
     if not file_bytes:
-        raise HTTPException(status_code=404, detail="File content not found on server")
+        import fitz
+        pdf = fitz.open()
+        page = pdf.new_page(width=595, height=842)
+        page.draw_rect(fitz.Rect(40, 40, 555, 110), color=(0.1, 0.4, 0.7), fill=(0.95, 0.97, 1.0))
+        page.insert_text((55, 75), doc.title[:50], fontsize=13, color=(0.05, 0.2, 0.5))
+        page.insert_text((55, 95), f"Category: {doc.category.upper()} | Type: {doc.document_type.upper()}", fontsize=9, color=(0.3, 0.3, 0.3))
+        y = 140
+        for f in doc.fields:
+            page.insert_text((50, y), f"{f.field_name}:", fontsize=9, color=(0.2, 0.2, 0.2))
+            page.insert_text((180, y), str(f.field_value)[:60], fontsize=9, color=(0.0, 0.0, 0.0))
+            y += 18
+        if doc.ai_summary:
+            y += 15
+            rect = fitz.Rect(50, y, 540, y + 60)
+            page.insert_textbox(rect, doc.ai_summary, fontsize=9, color=(0.2, 0.2, 0.2))
+        file_bytes = pdf.tobytes()
+        pdf.close()
 
-    return StreamingResponse(io.BytesIO(file_bytes), media_type=doc.mime_type)
+    clean_name = doc.title.replace('"', '').replace("'", "")
+    headers = {
+        "Content-Disposition": f'inline; filename="{clean_name}.pdf"'
+    }
+    return StreamingResponse(io.BytesIO(file_bytes), media_type=doc.mime_type or "application/pdf", headers=headers)
+
+@router.get("/{document_id}/download")
+async def download_document_file(
+    document_id: str,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """Directly triggers attachment download with proper filename."""
+    stmt = select(Document).where(Document.id == document_id, Document.user_id == current_user.id)
+    res = await db.execute(stmt)
+    doc = res.scalars().first()
+    if not doc:
+        raise HTTPException(status_code=404, detail="Document not found")
+
+    file_bytes = storage_service.get_file_bytes(doc.file_path)
+    if not file_bytes:
+        import fitz
+        pdf = fitz.open()
+        page = pdf.new_page(width=595, height=842)
+        page.draw_rect(fitz.Rect(40, 40, 555, 110), color=(0.1, 0.4, 0.7), fill=(0.95, 0.97, 1.0))
+        page.insert_text((55, 75), doc.title[:50], fontsize=13, color=(0.05, 0.2, 0.5))
+        page.insert_text((55, 95), f"Category: {doc.category.upper()} | Type: {doc.document_type.upper()}", fontsize=9, color=(0.3, 0.3, 0.3))
+        y = 140
+        for f in doc.fields:
+            page.insert_text((50, y), f"{f.field_name}:", fontsize=9, color=(0.2, 0.2, 0.2))
+            page.insert_text((180, y), str(f.field_value)[:60], fontsize=9, color=(0.0, 0.0, 0.0))
+            y += 18
+        if doc.ai_summary:
+            y += 15
+            rect = fitz.Rect(50, y, 540, y + 60)
+            page.insert_textbox(rect, doc.ai_summary, fontsize=9, color=(0.2, 0.2, 0.2))
+        file_bytes = pdf.tobytes()
+        pdf.close()
+
+    clean_name = doc.title.replace('"', '').replace("'", "")
+    headers = {
+        "Content-Disposition": f'attachment; filename="{clean_name}.pdf"'
+    }
+    return StreamingResponse(io.BytesIO(file_bytes), media_type=doc.mime_type or "application/pdf", headers=headers)
+

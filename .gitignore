@@ -37,6 +37,9 @@ htmlcov/
 backend/life_admin.db
 uploads/
 */uploads/
+storage/
+*/storage/
+backend/storage/
 
 # Build outputs
 dist/

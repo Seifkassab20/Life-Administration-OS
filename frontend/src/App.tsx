@@ -76,21 +76,23 @@ const AppContent: React.FC = () => {
 
       {/* Main Page Layout (with padding for mobile bottom bar) */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 pb-24 md:pb-12">
-        {!isAuthenticated && currentTab === 'landing' ? (
-          <LandingPage
-            onGetStarted={() => setCurrentTab('signup')}
-            onExploreDemo={() => setCurrentTab('dashboard')}
-          />
-        ) : !isAuthenticated && currentTab === 'login' ? (
-          <LoginPage
-            onSuccess={() => setCurrentTab('dashboard')}
-            onNavigateSignUp={() => setCurrentTab('signup')}
-          />
-        ) : !isAuthenticated && currentTab === 'signup' ? (
-          <SignUpPage
-            onSuccess={() => setCurrentTab('dashboard')}
-            onNavigateLogin={() => setCurrentTab('login')}
-          />
+        {!isAuthenticated ? (
+          currentTab === 'login' ? (
+            <LoginPage
+              onSuccess={() => handleNavigate('dashboard')}
+              onNavigateSignUp={() => handleNavigate('signup')}
+            />
+          ) : currentTab === 'signup' ? (
+            <SignUpPage
+              onSuccess={() => handleNavigate('dashboard')}
+              onNavigateLogin={() => handleNavigate('login')}
+            />
+          ) : (
+            <LandingPage
+              onGetStarted={() => handleNavigate('signup')}
+              onExploreDemo={() => handleNavigate('dashboard')}
+            />
+          )
         ) : currentTab === 'document-detail' && selectedDocId ? (
           <DocumentDetailPage
             documentId={selectedDocId}

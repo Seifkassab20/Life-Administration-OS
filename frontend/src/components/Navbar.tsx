@@ -109,7 +109,10 @@ export const Navbar: React.FC<NavbarProps> = ({
                     {user?.full_name?.charAt(0) || 'S'}
                   </div>
                   <button
-                    onClick={logout}
+                    onClick={() => {
+                      logout();
+                      onNavigate('landing');
+                    }}
                     title={t('logout')}
                     className="p-1.5 text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition-colors"
                   >
@@ -121,13 +124,22 @@ export const Navbar: React.FC<NavbarProps> = ({
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => onNavigate('login')}
-                  className="px-3.5 py-1.5 text-sm font-medium text-slate-300 hover:text-white transition-colors"
+                  className="px-3 py-1.5 text-xs sm:text-sm font-medium text-slate-300 hover:text-white transition-colors"
                 >
                   {t('login')}
                 </button>
                 <button
-                  onClick={loginAsDemo}
-                  className="px-4 py-1.5 rounded-lg text-sm font-medium gradient-brand text-white shadow-md shadow-brand-500/20 hover:opacity-90 transition-opacity"
+                  onClick={() => {
+                    loginAsDemo();
+                    onNavigate('dashboard');
+                  }}
+                  className="hidden sm:inline-flex px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 hover:bg-slate-800 text-brand-300 border border-slate-800 transition-colors"
+                >
+                  Demo Mode
+                </button>
+                <button
+                  onClick={() => onNavigate('signup')}
+                  className="px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-medium gradient-brand text-white shadow-md shadow-brand-500/20 hover:opacity-90 transition-opacity"
                 >
                   {t('signup')}
                 </button>
